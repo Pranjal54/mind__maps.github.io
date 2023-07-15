@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Day Planner</title>
+  <style>
+    body {
+      background-image: url(../assets/images.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+      font-family: 'Ysabeau Infant', sans-serif;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f1f1f1;
+      font-family: 'Ysabeau Infant', sans-serif;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(135deg, #f1f1f1, #e0e0e0);
+    }
+
+    .no-select {
+      user-select: none;
+    }
+
+    #mindmap-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: calc(100% - 120px); /* Adjust the height to leave space for buttons and title */
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      overflow: visible; /* Change to 'visible' to enable drag and drop */
+    }
+
+    .task-node {
+      position: absolute;
+      background-color: #fff;
+      border-radius: 50%;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      transform: translate(-50%, -50%); /* Center the node */
+      animation: fadeIn 0.5s ease-in-out;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .sub-task-node {
+      position: absolute;
+      background-color: #fff;
+      border-radius: 50%;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      transform: translate(-50%, -50%); /* Center the sub-task node */
+      animation: scaleIn 0.5s ease-in-out;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
+      animation: rotateIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        transform: scale(0);
+      }
+      to {
+        transform: scale(1);
+      }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 50px;
+      font-weight: bolder;
+      margin-top: -10px;
+      text-align: center;
+      font-size: 50px;
+      font-weight: bold;
+      margin-top: 20px;
+      color: #333;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    button {
+      background-color: black;
+      color: white;
+      border-radius: 5px;
+      border: 2px solid black;
+      height: fit-content;
+      width: 150px;
+      line-height: 20px;
+      padding: 5px;
+      transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    }
+
+    @keyframes rotateIn {
+      0% {
+        transform: rotate(-30deg) scale(0);
+        opacity: 0;
+      }
+      100% {
+        transform: rotate(0deg) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .button1:hover,
+    .button2:hover,
+    .button3:hover,
+    .button4:hover,
+    .button5:hover {
+      cursor: pointer;
+      border-radius: 5px;
+      border: 2px solid black;
+      height: fit-content;
+      width: 155px;
+      line-height: 25px;
+      font-size: 15px;
+      transition: 0.5s;
+      font-weight: 700;
+      background: linear-gradient(45deg, #64b5f6, #1e88e5);
+    }
+
+    .top-buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+
+    .add-remove-buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .update-button {
+      background-color: black;
+      color: white;
+      border-radius: 5px;
+      border: 2px solid black;
+      height: fit-content;
+      width: 120px;
+      line-height: 20px;
+      padding: 5px;
+      margin-right: 5px;
+    }
+
+    .update-button:hover {
+      cursor: pointer;
+      background-color: #444;
+    }
+
+    .remove-button {
+      background-color: black;
+      color: white;
+      border-radius: 5px;
+      border: 2px solid black;
+      height: fit-content;
+      width: 120px;
+      line-height: 20px;
+      padding: 5px;
+    }
+
+    .remove-button:hover {
+      cursor: pointer;
+      background-color: #ff4d4d;
+    }
+
+    .title-input {
+      display: none;
+    }
+
+    .save-button {
+      display: none;
+    }
+
+    .sub-tasks-container {
+      position: relative;
+    }
+
+    .line {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-left: 2px solid #000;
+      height: calc(100% + 10px); /* Adjust the height to connect the sub-tasks correctly */
+      width: 2px;
+    }
+
+    @media (max-width: 600px) {
+      #mindmap-container {
+        padding-top: 200px;
+        padding-bottom: 50px;
+        transition: 1s;
+        
+      }
+
+      .task-node {
+        width: 80px;
+        height: 80px;
+        font-size: 14px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .sub-task-node {
+        width: 60px;
+        height: 60px;
+        font-size: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Day Planner</h1>
+  <div class="top-buttons">
+    <button class="button1" onclick="zoom(-1)">Zoom Out</button>
+    <button class="button1" onclick="zoom(1)">Zoom In</button>
+    <button class="button1" onclick="exportPlanner()">Export Day Plan</button>
+  </div>
+  <div class="add-remove-buttons">
+    <button class="button1" onclick="addTask()">Add Task</button>
+  </div>
+  <div id="mindmap-container">
+    <div id="mind-map"></div>
+  </div>
+  <script>
+    let selectedNode = null;
+    let offsetX = 0;
+    let offsetY = 0;
+    let scale = 1;
+    let zoomStep = 0.1;
+
+    let taskNodes = [];
+
+    function startDrag(event) {
+      if (
+        event.target.classList.contains('task-node') &&
+        !event.target.classList.contains('disable-drag')
+      ) {
+        selectedNode = event.target;
+        offsetX = event.clientX - selectedNode.getBoundingClientRect().left;
+        offsetY = event.clientY - selectedNode.getBoundingClientRect().top;
+
+        // Prevent text selection during dragging
+        document.body.classList.add('no-select');
+
+        // Prevent the node from being affected by pointer events
+        selectedNode.style.pointerEvents = 'none';
+
+        // Attach the mouseup event listener to the selected node
+        selectedNode.addEventListener('mouseup', releaseDrag);
+      }
+    }
+
+    function moveNode(event) {
+      if (selectedNode !== null) {
+        const x = (event.clientX - offsetX) / scale; // Adjust for the current scale
+        const y = (event.clientY - offsetY) / scale; // Adjust for the current scale
+
+        selectedNode.style.left = `${x}px`;
+        selectedNode.style.top = `${y}px`;
+      }
+    }
+
+    function releaseDrag() {
+      selectedNode.style.pointerEvents = 'auto';
+      selectedNode = null;
+
+      // Allow text selection after releasing the node
+      document.body.classList.remove('no-select');
+    }
+
+    function handleZoom(event) {
+      if (!event.target.classList.contains('disable-zoom')) {
+        event.preventDefault();
+        if (event.deltaY > 0) {
+          zoom(-1);
+        } else {
+          zoom(1);
+        }
+      }
+    }
+
+    function exportPlanner() {
+      // Code for exporting the day planner data...
+      // ...
+    }
+
+    function zoom(direction) {
+      const newScale = scale + direction * zoomStep;
+      if (newScale >= 0.1 && newScale <= 3) {
+        scale = newScale;
+        document.getElementById('mindmap-container').style.transform = `scale(${scale})`;
+      }
+    }
+
+    function addTask() {
+      const taskNode = createTaskNode();
+
+      taskNodes.push(taskNode);
+
+      renderTaskNodes();
+    }
+
+    function createTaskNode() {
+      const node = document.createElement('div');
+      node.classList.add('task-node');
+      node.addEventListener('mousedown', startDrag);
+
+      const taskNode = {
+        element: node,
+        subTasks: [],
+        title: ''
+      };
+
+      const removeButton = document.createElement('button');
+      removeButton.innerHTML = 'Remove Task';
+      removeButton.addEventListener('click', () => removeTask(taskNode));
+      removeButton.classList.add('remove-button');
+
+      taskNode.removeButton = removeButton;
+
+      const updateButton = document.createElement('button');
+      updateButton.innerHTML = 'Update Task';
+      updateButton.addEventListener('click', () => toggleTaskDetails(taskNode));
+      updateButton.classList.add('update-button');
+
+      taskNode.updateButton = updateButton;
+
+      node.appendChild(updateButton);
+      node.appendChild(removeButton);
+
+      return taskNode;
+    }
+
+    function createSubTaskNode(taskNode) {
+      const node = document.createElement('div');
+      node.classList.add('sub-task-node');
+      node.addEventListener('mousedown', startDrag);
+
+      const subTaskNode = {
+        element: node,
+        title: ''
+      };
+
+      const removeButton = document.createElement('button');
+      removeButton.innerHTML = 'Remove Subtask';
+      removeButton.addEventListener('click', () => removeSubTask(taskNode, subTaskNode));
+      removeButton.classList.add('remove-button');
+
+      subTaskNode.removeButton = removeButton;
+
+      const updateButton = document.createElement('button');
+      updateButton.innerHTML = 'Update Subtask';
+      updateButton.addEventListener('click', () => toggleSubTaskDetails(subTaskNode));
+      updateButton.classList.add('update-button');
+
+      subTaskNode.updateButton = updateButton;
+
+      node.appendChild(updateButton);
+      node.appendChild(removeButton);
+
+      return subTaskNode;
+    }
+
+    function toggleTaskDetails(taskNode) {
+      const titleInput = taskNode.element.querySelector('.title-input');
+      const saveButton = taskNode.element.querySelector('.save-button');
+
+      if (titleInput.style.display === 'none') {
+        // Show task details input fields
+        titleInput.style.display = 'block';
+        saveButton.style.display = 'block';
+      } else {
+        // Hide task details input fields
+        titleInput.style.display = 'none';
+        saveButton.style.display = 'none';
+      }
+    }
+
+    function toggleSubTaskDetails(subTaskNode) {
+      const titleInput = subTaskNode.element.querySelector('.title-input');
+      const saveButton = subTaskNode.element.querySelector('.save-button');
+
+      if (titleInput.style.display === 'none') {
+        // Show subtask details input fields
+        titleInput.style.display = 'block';
+        saveButton.style.display = 'block';
+      } else {
+        // Hide subtask details input fields
+        titleInput.style.display = 'none';
+        saveButton.style.display = 'none';
+      }
+    }
+
+    function updateTaskDetails(event, taskNode) {
+      const value = event.target.value;
+      taskNode.title = value;
+    }
+
+    function updateSubTaskDetails(event, subTaskNode) {
+      const value = event.target.value;
+      subTaskNode.title = value;
+    }
+
+    function updateTaskNode(taskNode) {
+      const titleInput = taskNode.element.querySelector('.title-input');
+
+      taskNode.title = titleInput.value;
+
+      taskNode.element.textContent = taskNode.title; // Update node text content
+
+      toggleTaskDetails(taskNode);
+
+      taskNode.element.classList.add('task-node'); // Add animation to the updated task node
+    }
+
+    function updateSubTaskNode(subTaskNode) {
+      const titleInput = subTaskNode.element.querySelector('.title-input');
+
+      subTaskNode.title = titleInput.value;
+
+      subTaskNode.element.textContent = subTaskNode.title; // Update node text content
+
+      toggleSubTaskDetails(subTaskNode);
+
+      subTaskNode.element.classList.add('sub-task-node'); // Add animation to the updated sub-task node
+    }
+
+    function removeTask(taskNode) {
+      const taskIndex = taskNodes.indexOf(taskNode);
+      if (taskIndex > -1) {
+        taskNodes.splice(taskIndex, 1);
+        taskNode.element.parentNode.removeChild(taskNode.element);
+      }
+    }
+
+    function removeSubTask(taskNode, subTaskNode) {
+      const subTaskIndex = taskNode.subTasks.indexOf(subTaskNode);
+      if (subTaskIndex > -1) {
+        taskNode.subTasks.splice(subTaskIndex, 1);
+        subTaskNode.element.parentNode.removeChild(subTaskNode.element);
+      }
+    }
+
+    function addSubTask(taskNode) {
+      const subTaskNode = createSubTaskNode(taskNode);
+
+      taskNode.subTasks.push(subTaskNode);
+
+      renderTaskNodes();
+    }
+
+    function renderTaskNodes() {
+      const mindMap = document.getElementById('mind-map');
+      mindMap.innerHTML = '';
+
+      for (let i = 0; i < taskNodes.length; i++) {
+        const taskNode = taskNodes[i];
+        const node = taskNode.element;
+
+        const titleInput = document.createElement('input');
+        titleInput.classList.add('title-input');
+        titleInput.value = taskNode.title;
+        titleInput.addEventListener('input', (event) => updateTaskDetails(event, taskNode));
+        titleInput.style.display = 'none';
+        node.appendChild(titleInput);
+
+        const saveButton = document.createElement('button');
+        saveButton.innerHTML = 'Save';
+        saveButton.classList.add('save-button');
+        saveButton.addEventListener('click', () => updateTaskNode(taskNode));
+        saveButton.style.display = 'none';
+        node.appendChild(saveButton);
+
+        const subTasksContainer = document.createElement('div');
+        subTasksContainer.classList.add('sub-tasks-container');
+
+        const addSubTaskButton = document.createElement('button');
+        addSubTaskButton.innerHTML = 'Add Subtask';
+        addSubTaskButton.addEventListener('click', () => addSubTask(taskNode));
+
+        subTasksContainer.appendChild(addSubTaskButton);
+
+        let previousSubTaskNode = null;
+        for (let j = 0; j < taskNode.subTasks.length; j++) {
+          const subTaskNode = taskNode.subTasks[j];
+          const subTaskElement = subTaskNode.element;
+
+          const subTaskTitleInput = document.createElement('input');
+          subTaskTitleInput.classList.add('title-input');
+          subTaskTitleInput.value = subTaskNode.title;
+          subTaskTitleInput.addEventListener('input', (event) => updateSubTaskDetails(event, subTaskNode));
+          subTaskTitleInput.style.display = 'none';
+          subTaskElement.appendChild(subTaskTitleInput);
+
+          const subTaskSaveButton = document.createElement('button');
+          subTaskSaveButton.innerHTML = 'Save';
+          subTaskSaveButton.classList.add('save-button');
+          subTaskSaveButton.addEventListener('click', () => updateSubTaskNode(subTaskNode));
+          subTaskSaveButton.style.display = 'none';
+          subTaskElement.appendChild(subTaskSaveButton);
+
+          subTasksContainer.appendChild(subTaskElement);
+
+          if (previousSubTaskNode) {
+            const line = document.createElement('div');
+            line.classList.add('line');
+            line.style.top = '50%';
+            line.style.left = '50%';
+            line.style.transform = 'translate(-50%, -50%)';
+            line.style.borderLeft = '2px solid #000';
+            line.style.position = 'absolute';
+            line.style.height = 'calc(100% + 10px)'; // Adjust the height to connect the sub-tasks correctly
+            line.style.width = '2px';
+
+            subTasksContainer.appendChild(line);
+          }
+
+          previousSubTaskNode = subTaskNode;
+        }
+
+        node.appendChild(subTasksContainer);
+
+        node.appendChild(taskNode.removeButton);
+        node.appendChild(taskNode.updateButton);
+
+        mindMap.appendChild(node);
+      }
+    }
+
+    document.getElementById('mind-map').addEventListener('mousedown', startDrag);
+    document.addEventListener('mousemove', moveNode);
+    document.addEventListener('mouseup', releaseDrag);
+    document.addEventListener('wheel', handleZoom);
+    renderTaskNodes();
+  </script>
+</body>
+</html>
