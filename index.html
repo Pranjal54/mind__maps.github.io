@@ -1,22 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Day Planner</title>
   <style>
     body {
-      background-image: url(../assets/images.png);
-      background-repeat: no-repeat;
-      background-size: cover;
-      font-family: 'Ysabeau Infant', sans-serif;
+      background-color: #161616;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #f1f1f1;
-      font-family: 'Ysabeau Infant', sans-serif;
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      background-image: linear-gradient(135deg, #f1f1f1, #e0e0e0);
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+       background-repeat: no-repeat;
+       background-size: cover;
+       
+    }
+
+    .logo img{
+      height:120px ;
+      width: 150px;
+      margin-left: -750px;
+      margin-top: -10px;
+      margin-bottom: 10px;
+      background-color:transparent ;
+      background: transparent;
+      position: relative;
+      border-radius: 50%;
+    }
+    
+    .contact{
+      position: relative;
+      
+      align-items: left;
+      margin-top: 55px;
+      margin-left: 1400px;
+      size: 20px;
+    }
+
+    .content-container {
+      position: relative;
     }
 
     .no-select {
@@ -28,15 +53,34 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: calc(100% - 120px); /* Adjust the height to leave space for buttons and title */
+      height: 60vh;
       width: 100%;
-      padding: 20px;
-      box-sizing: border-box;
-      overflow: visible; /* Change to 'visible' to enable drag and drop */
+      max-width: 1200px; /* Set a maximum width to prevent excessive expansion on larger screens */
+      /* background-color: rgba(255, 255, 255, 0.7); */
+      border-radius: 10px;
+      /* box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); */
+      overflow: hidden;
+      padding: 10px; /* Add some padding to create space between the content and container edges */
+      box-sizing: border-box; /* Include padding in the element's total width */
     }
 
-    .task-node {
+    
+
+    @keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+    .task-node,
+    .sub-task-node {
       position: absolute;
+      
       background-color: #fff;
       border-radius: 50%;
       padding: 10px;
@@ -48,38 +92,95 @@
       flex-wrap: wrap;
       transform: translate(-50%, -50%); /* Center the node */
       animation: fadeIn 0.5s ease-in-out;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
-      animation: pulse 2s ease-in-out infinite;
-    }
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      /* animation: pulse 2s ease-in-out infinite;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+      transition: transform 0.3s ease;
+      transform: translate(-50%, -50%) rotateX(60deg) rotateY(45deg) rotateZ(0deg); 
+  transition: transform 0.3s ease;
+  perspective: 800px;
+  transform-style: preserve-3d; */
+  border: none; /* Remove border */
+  /* ... (other styles) ... */
+  background-color: #3498db;
+  /* ... (other styles) ... */
+  /* Apply 3D transformations for the cube effect */
+  transform-style: preserve-3d;
+}
 
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.1);
-      }
-      100% {
-        transform: scale(1);
-      }
+.task-node-cube {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  transform: perspective(600px) rotateX(0deg) rotateY(0deg);
+  transition: transform 0.5s;
+}
+
+.task-node-cube div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: inherit;
+  opacity: 0.9;
+  border-radius: 8px;
+}
+
+.task-node {
+      /* ... (Your existing styles) ... */
+      background-color: #1d2125;
+      color: white;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      opacity: 30%;
     }
 
     .sub-task-node {
-      position: absolute;
-      background-color: #fff;
-      border-radius: 50%;
-      padding: 10px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      transform: translate(-50%, -50%); /* Center the sub-task node */
-      animation: scaleIn 0.5s ease-in-out;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
-      animation: rotateIn 1s ease-in-out;
+      /* ... (Your existing styles) ... */
+      background-color: #1d2125;
+      color: white;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      opacity: 30%;
     }
+
+.task-node-cube .front  { transform: rotateY(0deg) translateZ(50px); }
+.task-node-cube .back   { transform: rotateY(180deg) translateZ(50px); }
+.task-node-cube .right  { transform: rotateY(90deg) translateZ(50px); }
+.task-node-cube .left   { transform: rotateY(-90deg) translateZ(50px); }
+.task-node-cube .top    { transform: rotateX(90deg) translateZ(50px); }
+.task-node-cube .bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+
+
+
+    
+
+
+    /* Adjust content styles to ensure it fits within the cube */
+.task-node,
+.sub-task-node {
+  font-size: 16px; /* Increase font size for better readability inside the cube */
+  /* ... (other styles) ... */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  
+  animation: fadeIn 0.8s ease forwards;
+}
+
+/* @keyframes rotateAnimation {
+  0%, 100% {
+    transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  25% {
+    transform: translate(-50%, -50%) rotateX(90deg) rotateY(0deg) rotateZ(0deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) rotateX(90deg) rotateY(90deg) rotateZ(0deg);
+  }
+  75% {
+    transform: translate(-50%, -50%) rotateX(90deg) rotateY(90deg) rotateZ(90deg);
+  }
+} */
 
     @keyframes fadeIn {
       from {
@@ -100,28 +201,42 @@
     }
 
     h1 {
-      text-align: center;
-      font-size: 50px;
-      font-weight: bolder;
-      margin-top: -10px;
-      text-align: center;
-      font-size: 50px;
-      font-weight: bold;
-      margin-top: 20px;
-      color: #333;
+      font-size: 36px;
+      color: #fff;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      margin: 0;
+      padding: 20px 0;
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
-    button {
-      background-color: black;
-      color: white;
-      border-radius: 5px;
-      border: 2px solid black;
-      height: fit-content;
-      width: 150px;
-      line-height: 20px;
-      padding: 5px;
-      transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    .top-buttons {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 40px;
+      
+    }
+
+    .button1{
+      /* background-color: #fff; */
+      background-color: #161616;
+      color: #333;
+      border-radius: 8px;
+      border: 2px solid#161616;
+      height: 40px;
+      width: 100px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.8s ease, color 0.8s ease, transform 0.8s ease;
+      margin-left: 10px;
+      margin-top: 20px;
     }
 
     @keyframes rotateIn {
@@ -135,6 +250,53 @@
       }
     }
 
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .task-node:hover:hover {
+      animation: pulse 1.5s ease-in-out infinite; /* Apply the pulse animation */
+  background-color: #373b4f;
+  
+  opacity: 80%;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    
+    .sub-task-node:hover{
+      animation: pulse 1.5s ease-in-out infinite; /* Apply the pulse animation */
+      background-color: #373b4f;
+  
+  opacity: 80%;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+   
+
+    .save-button {
+      /* ... (Your existing styles) ... */
+      transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+      background: linear-gradient(45deg, #7f8ff9, #825be6);
+      box-shadow: 1px solid #825be6;
+    }
+
+    .save-button:hover {
+      background-color: #825be6;
+      color: white;
+      transform: scale(1.05);
+    }
+
+
     .button1:hover,
     .button2:hover,
     .button3:hover,
@@ -142,59 +304,76 @@
     .button5:hover {
       cursor: pointer;
       border-radius: 5px;
-      border: 2px solid black;
+      border: 0px ;
       height: fit-content;
       width: 155px;
       line-height: 25px;
       font-size: 15px;
       transition: 0.5s;
       font-weight: 700;
-      background: linear-gradient(45deg, #64b5f6, #1e88e5);
+      background: linear-gradient(45deg, #7f8ff9, #825be6);
+      background-color: #333;
+      color: #fff;
+      /* transform: scale(1.05); */
+      transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+      transform: scale(1.1);
+      background-color: #9c76e6;
+      color: white;
+      
     }
 
-    .top-buttons {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 20px;
-    }
+    
 
     .add-remove-buttons {
       display: flex;
       justify-content: center;
       margin-top: 10px;
+      
     }
 
     .update-button {
-      background-color: black;
+      
+      background-color: #1d2125;
       color: white;
       border-radius: 5px;
-      border: 2px solid black;
+      border: 2px solid #1d2125;
       height: fit-content;
       width: 120px;
       line-height: 20px;
       padding: 5px;
       margin-right: 5px;
+      transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    
     }
 
     .update-button:hover {
       cursor: pointer;
-      background-color: #444;
+      /* background-color: #444; */
+      background-color: #373b4f;
+      color: white;
+      transform: scale(1.05);
+      border: 2px solid #373b4f;
     }
 
     .remove-button {
-      background-color: black;
+      background-color:#1d2125;
       color: white;
       border-radius: 5px;
-      border: 2px solid black;
+      border: 2px solid #1d2125;
       height: fit-content;
       width: 120px;
       line-height: 20px;
       padding: 5px;
+      transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    
     }
 
     .remove-button:hover {
       cursor: pointer;
-      background-color: #ff4d4d;
+      background-color: #373b4f;
+      color: white;
+      transform: scale(1.05);
+      border: 2px solid #373b4f;
     }
 
     .title-input {
@@ -219,12 +398,19 @@
       width: 2px;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 1368px) {
       #mindmap-container {
         padding-top: 200px;
         padding-bottom: 50px;
         transition: 1s;
         
+      }
+
+      .logo img{
+        height: 50px;
+        width: 50px;
+        margin-left: -400px;
+        margin-top: -200px
       }
 
       .task-node {
@@ -240,27 +426,161 @@
         font-size: 12px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
       }
+
+      .top-buttons{
+        width: 25px;
+      }
+
+      
     }
+
+    @media (max-width: 600px) {
+      /* Adjust container padding and top buttons layout */
+      #mindmap-container {
+        padding-top: 200px;
+        padding-bottom: 70px; /* Add more padding at the bottom for button visibility */
+      }
+
+      .logo img{
+        height: 50px;
+        width: 50px;
+        margin-left: -180px;
+        margin-top: 10px;
+      }
+
+      .top-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .button1 {
+        margin-bottom: 10px;
+        width: 105px;
+        font-size: 12px;
+        padding: 8px 12px; /* Add more padding for touch-friendly interactions */
+      }
+
+      /* Add top margin for the "Zoom Out" button */
+      .button1:first-child {
+        margin-top: 100px;
+      }
+
+      .add-remove-buttons {
+        justify-content: center; /* Center the Add Task button on smaller screens */
+        margin-top: 20px;
+        margin-bottom: 20px;
+      }
+
+      .task-node {
+        width: 80px; /* Increase node size to accommodate touch interactions */
+        height: 80px;
+        font-size: 14px; /* Increase font size for better readability */
+      }
+
+      .sub-task-node {
+        width: 60px; /* Increase node size to accommodate touch interactions */
+        height: 60px;
+        font-size: 12px; /* Increase font size for better readability */
+      }
+
+      .line {
+        width: 2px;
+      }
+
+      h1 {
+        font-size: 20px; /* Decrease heading font size for better fit */
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-container {
+        width: 90%;
+        padding: 0; /* Remove padding on smaller screens to make better use of space */
+      }
+
+      .logo img{
+        height: 50px;
+        width: 50px;
+        margin-left: -130px;
+      }
+
+      .top-buttons {
+        flex-direction: column;
+        align-items: center; /* Center buttons horizontally on smaller screens */
+        margin-bottom: 20px; /* Add more space between buttons */
+        margin-top: 30px;
+        width: 10px;
+      }
+
+      .button {
+        margin-bottom: 10px;
+        width: 25px;
+        font-size: 12px;
+        padding: 8px 12px;
+        
+      }
+
+      #mindmap-container {
+        padding-top: 200px;
+        padding-bottom: 70px; /* Increase the height of the container for better visibility on smaller screens */
+      }
+
+      .task-node {
+        width: 120px;
+        height: 120px;
+        font-size: 16px; /* Increase font size for better readability */
+      }
+
+      .sub-task-node {
+        width: 100px;
+        height: 100px;
+        font-size: 14px; /* Increase font size for better readability */
+      }
+
+      h1 {
+        font-size: 20px; /* Decrease heading font size for better fit */
+      }
+
+    }
+
   </style>
 </head>
 <body>
   <h1>Day Planner</h1>
+  <div class="logo">
+    <img src="assets/mind-maps-low-resolution-logo-white-on-black-background.png" alt="">
+  </div>
   <div class="top-buttons">
     <button class="button1" onclick="zoom(-1)">Zoom Out</button>
     <button class="button1" onclick="zoom(1)">Zoom In</button>
-    <button class="button1" onclick="exportPlanner()">Export Day Plan</button>
+    <!-- <button class="button1" onclick="exportPlanner()">Export Day Plan</button> -->
   </div>
+  
+
   <div class="add-remove-buttons">
     <button class="button1" onclick="addTask()">Add Task</button>
   </div>
+  
   <div id="mindmap-container">
     <div id="mind-map"></div>
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.min.js"></script>
+  <div id="cube-container"></div>
+  
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.js"></script>
+  <script src="https://kit.fontawesome.com/78014b50e5.js" crossorigin="anonymous"></script>
+
   <script>
+
+    
+
+
     let selectedNode = null;
     let offsetX = 0;
     let offsetY = 0;
     let scale = 1;
+    let baseScale = 1;
     let zoomStep = 0.1;
 
     let taskNodes = [];
@@ -273,23 +593,16 @@
         selectedNode = event.target;
         offsetX = event.clientX - selectedNode.getBoundingClientRect().left;
         offsetY = event.clientY - selectedNode.getBoundingClientRect().top;
-
-        // Prevent text selection during dragging
         document.body.classList.add('no-select');
-
-        // Prevent the node from being affected by pointer events
         selectedNode.style.pointerEvents = 'none';
-
-        // Attach the mouseup event listener to the selected node
         selectedNode.addEventListener('mouseup', releaseDrag);
       }
     }
 
     function moveNode(event) {
       if (selectedNode !== null) {
-        const x = (event.clientX - offsetX) / scale; // Adjust for the current scale
-        const y = (event.clientY - offsetY) / scale; // Adjust for the current scale
-
+        const x = (event.clientX - offsetX) / scale;
+        const y = (event.clientY - offsetY) / scale;
         selectedNode.style.left = `${x}px`;
         selectedNode.style.top = `${y}px`;
       }
@@ -298,8 +611,37 @@
     function releaseDrag() {
       selectedNode.style.pointerEvents = 'auto';
       selectedNode = null;
+      document.body.classList.remove('no-select');
+    }
 
-      // Allow text selection after releasing the node
+    function startTouchDrag(event) {
+      if (
+        event.target.classList.contains('task-node') &&
+        !event.target.classList.contains('disable-drag')
+      ) {
+        selectedNode = event.target;
+        const touch = event.touches[0];
+        offsetX = touch.clientX - selectedNode.getBoundingClientRect().left;
+        offsetY = touch.clientY - selectedNode.getBoundingClientRect().top;
+        document.body.classList.add('no-select');
+        selectedNode.style.pointerEvents = 'none';
+        selectedNode.addEventListener('touchend', releaseTouchDrag);
+      }
+    }
+
+    function moveTouchNode(event) {
+      if (selectedNode !== null) {
+        const touch = event.touches[0];
+        const x = (touch.clientX - offsetX) / scale;
+        const y = (touch.clientY - offsetY) / scale;
+        selectedNode.style.left = `${x}px`;
+        selectedNode.style.top = `${y}px`;
+      }
+    }
+
+    function releaseTouchDrag() {
+      selectedNode.style.pointerEvents = 'auto';
+      selectedNode = null;
       document.body.classList.remove('no-select');
     }
 
@@ -315,13 +657,25 @@
     }
 
     function exportPlanner() {
-      // Code for exporting the day planner data...
-      // ...
+      const plannerData = {
+        taskNodes: taskNodes.map(taskNode => ({
+          title: taskNode.title,
+          subTasks: taskNode.subTasks.map(subTaskNode => ({ title: subTaskNode.title }))
+        }))
+      };
+      const json = JSON.stringify(plannerData, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'day_planner.json';
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     function zoom(direction) {
       const newScale = scale + direction * zoomStep;
-      if (newScale >= 0.1 && newScale <= 3) {
+      if (newScale >= 0.001 && newScale <= 100) {
         scale = newScale;
         document.getElementById('mindmap-container').style.transform = `scale(${scale})`;
       }
@@ -329,9 +683,7 @@
 
     function addTask() {
       const taskNode = createTaskNode();
-
       taskNodes.push(taskNode);
-
       renderTaskNodes();
     }
 
@@ -339,6 +691,7 @@
       const node = document.createElement('div');
       node.classList.add('task-node');
       node.addEventListener('mousedown', startDrag);
+      node.addEventListener('touchstart', startTouchDrag);
 
       const taskNode = {
         element: node,
@@ -362,6 +715,17 @@
 
       node.appendChild(updateButton);
       node.appendChild(removeButton);
+
+      const addSubTaskButton = document.createElement('button');
+  addSubTaskButton.innerHTML = 'Add Subtask';
+  addSubTaskButton.addEventListener('click', () => addSubTask(taskNode));
+  addSubTaskButton.classList.add('button1'); // Apply the same style as other buttons
+
+  taskNode.addSubTaskButton = addSubTaskButton; // Store reference for later use
+
+  node.appendChild(updateButton);
+  node.appendChild(removeButton);
+  // node.appendChild(addSubTaskButton); // Append the "Add Subtask" button
 
       return taskNode;
     }
@@ -562,10 +926,35 @@
       }
     }
 
+    document.addEventListener('keydown', (event) => {
+  if (selectedNode !== null) {
+    const rotationIncrement = 10; // Adjust rotation speed as needed
+    if (event.key === 'ArrowUp') {
+      rotateCube(selectedNode, -rotationIncrement, 0);
+    } else if (event.key === 'ArrowDown') {
+      rotateCube(selectedNode, rotationIncrement, 0);
+    } else if (event.key === 'ArrowLeft') {
+      rotateCube(selectedNode, 0, -rotationIncrement);
+    } else if (event.key === 'ArrowRight') {
+      rotateCube(selectedNode, 0, rotationIncrement);
+    }
+  }
+});
+
+function rotateCube(selectedNode, rotateX, rotateY) {
+  const cube = selectedNode.querySelector('.task-node-cube');
+  cube.style.transform = `perspective(600px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+}
+
+
+   
     document.getElementById('mind-map').addEventListener('mousedown', startDrag);
     document.addEventListener('mousemove', moveNode);
     document.addEventListener('mouseup', releaseDrag);
     document.addEventListener('wheel', handleZoom);
+    document.getElementById('mind-map').addEventListener('touchstart', startTouchDrag);
+    document.addEventListener('touchmove', moveTouchNode);
+    document.addEventListener('touchend', releaseTouchDrag);
     renderTaskNodes();
   </script>
 </body>
